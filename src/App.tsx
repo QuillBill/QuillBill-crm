@@ -1,13 +1,1 @@
-@@ .. @@
- import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
- import { Layout } from './components/layout/Layout';
-+import { Toast } from './components/ui/Toast';
- import { useAuth } from './hooks/useAuth';
-@@ .. @@
-       ) : (
-         <Auth />
-       )}
-+      <Toast />
-     </Router>
-   );
- }
+{"code":"rate-limited","message":"You have hit the rate limit. Please upgrade to keep chatting.","providerLimitHit":false,"isRetryable":true}
