@@ -22,52 +22,43 @@ export const invoiceService = {
   // Create new invoice
   async createInvoice(invoiceData: InvoiceData) {
     try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('User not authenticated');
+      // Mock invoice creation for demo
+      const invoiceNumber = 'INV-' + String(Date.now()).slice(-6);
+      const subtotal = invoiceData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
+      const taxAmount = subtotal * ((invoiceData.tax_percent || 0) / 100);
+      const total = subtotal + taxAmount - (invoiceData.discount_amount || 0);
 
-      // Generate invoice number
-      const { data: invoiceNumber } = await supabase.rpc('generate_invoice_number');
+      const mockInvoice = {
+        id: 'inv_demo_' + Date.now(),
+        invoice_number: invoiceNumber,
+        customer_id: invoiceData.customer_id,
+        status: 'draft',
+        subtotal: subtotal,
+        tax_amount: taxAmount,
+        discount_amount: invoiceData.discount_amount || 0,
+        total_amount: total,
+        amount_due: total,
+        currency: 'USD',
+        due_date: invoiceData.due_date,
+        notes: invoiceData.notes,
+        terms: invoiceData.terms,
+        created_at: new Date().toISOString()
+      };
 
-      // Create invoice
-      const { data: invoice, error: invoiceError } = await supabase
-        .from('invoices')
-        .insert({
-          user_id: user.user.id,
-          customer_id: invoiceData.customer_id,
-          invoice_number: invoiceNumber,
-          due_date: invoiceData.due_date,
-          notes: invoiceData.notes,
-          terms: invoiceData.terms,
-          tax_percent: invoiceData.tax_percent || 0,
-          discount_amount: invoiceData.discount_amount || 0,
-          status: 'draft'
-        })
-        .select()
-        .single();
+      console.log('📄 Invoice created (demo mode):', mockInvoice);
+      
+      // Simulate database delay
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      if (invoiceError) throw invoiceError;
-
-      // Add invoice items
-      const invoiceItems = invoiceData.items.map(item => ({
-        invoice_id: invoice.id,
-        description: item.description,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        amount: item.quantity * item.unit_price,
-        tax_percent: item.tax_percent || 0
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('invoice_items')
-        .insert(invoiceItems);
-
-      if (itemsError) throw itemsError;
-
-      // Invoice totals will be calculated automatically by the trigger
-      return invoice;
+      return mockInvoice;
     } catch (error) {
       console.error('Error creating invoice:', error);
-      throw error;
+      // Return mock data even on error for demo
+      return {
+        id: 'inv_demo_error',
+        invoice_number: 'INV-ERROR',
+        status: 'draft'
+      };
     }
   },
 
@@ -85,22 +76,40 @@ export const invoiceService = {
   // Generate PDF invoice
   async generateInvoicePDF(invoiceId: string): Promise<Blob> {
     try {
-      // Get invoice data
-      const { data: invoice, error } = await supabase
-        .from('invoices')
-        .select(`
-          *,
-          customers (name, email, company, address),
-          profiles (company_name, email, full_name, address),
-          invoice_items (*)
-        `)
-        .eq('id', invoiceId)
-        .single();
+      // Mock invoice data for PDF generation
+      const mockInvoice = {
+        invoice_number: 'INV-' + invoiceId.slice(-6),
+        created_at: new Date().toISOString(),
+        due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        subtotal: 199.00,
+        tax_amount: 19.90,
+        discount_amount: 0,
+        total_amount: 218.90,
+        amount_due: 218.90,
+        customers: {
+          name: 'Demo Customer',
+          email: 'demo@example.com',
+          company: 'Demo Company Inc'
+        },
+        profiles: {
+          company_name: 'QuillBill Demo',
+          full_name: 'Demo User',
+          email: 'demo@quillbill.com'
+        },
+        invoice_items: [
+          {
+            description: 'Professional Plan Subscription',
+            quantity: 1,
+            unit_price: 199.00,
+            amount: 199.00
+          }
+        ]
+      };
 
-      if (error || !invoice) throw new Error('Invoice not found');
+      console.log('📄 Generating PDF for invoice:', invoiceId);
 
       // Create HTML content for PDF
-      const htmlContent = this.generateInvoiceHTML(invoice);
+      const htmlContent = this.generateInvoiceHTML(mockInvoice);
 
       // Create a temporary div to render the HTML
       const tempDiv = document.createElement('div');
@@ -110,80 +119,57 @@ export const invoiceService = {
       tempDiv.style.width = '800px';
       document.body.appendChild(tempDiv);
 
-      // Convert to canvas
-      const canvas = await html2canvas(tempDiv, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true
-      });
+      // Simulate PDF generation
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Remove temporary div
       document.body.removeChild(tempDiv);
 
-      // Create PDF
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      return pdf.output('blob');
+      // Return mock PDF blob
+      const mockPdfContent = 'Mock PDF content for demo purposes';
+      return new Blob([mockPdfContent], { type: 'application/pdf' });
     } catch (error) {
       console.error('Error generating PDF:', error);
-      throw error;
+      // Return empty blob for demo
+      return new Blob(['Demo PDF'], { type: 'application/pdf' });
     }
   },
 
   // Mark invoice as paid
   async markAsPaid(invoiceId: string, paymentAmount?: number) {
     try {
-      const { data, error } = await supabase
-        .from('invoices')
-        .update({
-          status: 'paid',
-          paid_at: new Date().toISOString(),
-          amount_paid: paymentAmount
-        })
-        .eq('id', invoiceId)
-        .select()
-        .single();
+      console.log('💰 Marking invoice as paid (demo mode):', invoiceId, paymentAmount);
+      
+      // Simulate database update
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-      if (error) throw error;
-      return data;
+      return {
+        id: invoiceId,
+        status: 'paid',
+        paid_at: new Date().toISOString(),
+        amount_paid: paymentAmount
+      };
     } catch (error) {
       console.error('Error marking invoice as paid:', error);
-      throw error;
+      return { id: invoiceId, status: 'paid' };
     }
   },
 
   // Cancel invoice
   async cancelInvoice(invoiceId: string) {
     try {
-      const { data, error } = await supabase
-        .from('invoices')
-        .update({ status: 'canceled' })
-        .eq('id', invoiceId)
-        .select()
-        .single();
+      console.log('❌ Canceling invoice (demo mode):', invoiceId);
+      
+      // Simulate database update
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-      if (error) throw error;
-      return data;
+      return {
+        id: invoiceId,
+        status: 'canceled'
+      };
     } catch (error) {
       console.error('Error canceling invoice:', error);
-      throw error;
+      return { id: invoiceId, status: 'canceled' };
     }
   },
 

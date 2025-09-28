@@ -46,14 +46,28 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Connection Status Alert */}
-      {connectionTest && !connectionTest.success && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      {connectionTest && (
+        <div className={`border rounded-lg p-4 ${
+          connectionTest.success 
+            ? 'bg-green-50 border-green-200' 
+            : 'bg-yellow-50 border-yellow-200'
+        }`}>
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-yellow-600" />
+            {connectionTest.success ? (
+              <CheckCircle className="w-5 h-5 text-green-600" />
+            ) : (
+              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+            )}
             <div>
-              <h3 className="font-medium text-yellow-800">Database Connection Issue</h3>
-              <p className="text-sm text-yellow-700 mt-1">
-                {connectionTest.message}. Using demo data for now. Please set up Supabase to see real data.
+              <h3 className={`font-medium ${
+                connectionTest.success ? 'text-green-800' : 'text-yellow-800'
+              }`}>
+                {connectionTest.success ? 'System Status: Online' : 'Demo Mode Active'}
+              </h3>
+              <p className={`text-sm mt-1 ${
+                connectionTest.success ? 'text-green-700' : 'text-yellow-700'
+              }`}>
+                {connectionTest.message}
               </p>
             </div>
           </div>
@@ -64,8 +78,10 @@ export const Dashboard: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600">
-            Welcome back! Here's what's happening with your business.
-            {connectionTest?.success ? ' (Live data)' : ' (Demo data)'}
+            Welcome back! Here's what's happening with your business. 
+            <span className="inline-flex items-center ml-2 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              {connectionTest?.success ? '🟢 Live System' : '🔵 Demo Mode'}
+            </span>
           </p>
         </div>
       </div>
