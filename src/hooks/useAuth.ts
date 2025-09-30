@@ -1,7 +1,7 @@
  import { useState, useEffect } from 'react';
  import { User } from '@supabase/supabase-js';
  import { supabase } from '../lib/supabase';
-+import toast from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
  export const useAuth = () => {
    const [user, setUser] = useState<User | null>(null);
