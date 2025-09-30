@@ -1,7 +1,33 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback, memo } from 'react';
 import { Search, Filter, ChevronUp, ChevronDown } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { TableSkeleton } from './SkeletonLoader';
+
+// Memoized table row component for better performance
+const TableRow = memo<{
+  item: any;
+  columns: Column<any>[];
+  index: number;
+}>(({ item, columns, index }) => (
+  <tr className="hover:bg-gray-50 transition-colors duration-150">
+    {columns.map((column) => (
+      <td
+        key={String(column.key)}
+        className={cn(
+          "px-6 py-4 whitespace-nowrap text-sm text-gray-900",
+          column.className
+        )}
+      >
+        {column.render 
+          ? column.render(item[column.key], item)
+          : String(item[column.key] || '-')
+        }
+      </td>
+    ))}
+  </tr>
+));
+
+TableRow.displayName = 'TableRow';
 
 interface Column<T> {
   key: keyof T;
@@ -21,7 +47,7 @@ interface OptimizedTableProps<T> {
   className?: string;
 }
 
-export function OptimizedTable<T extends Record<string, any>>({
+export const OptimizedTable = memo(<T extends Record<string, any>>({
   data,
   columns,
   loading = false,
@@ -37,14 +63,25 @@ export function OptimizedTable<T extends Record<string, any>>({
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Debounced search to improve performance
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1); // Reset to first page on search
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
   const filteredAndSortedData = useMemo(() => {
     let result = [...data];
 
     // Search filtering
-    if (searchTerm) {
+    if (debouncedSearchTerm) {
       result = result.filter(item =>
         Object.values(item).some(value =>
-          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+          String(value).toLowerCase().includes(debouncedSearchTerm.toLowerCase())
         )
       );
     }
@@ -66,7 +103,7 @@ export function OptimizedTable<T extends Record<string, any>>({
     }
 
     return result;
-  }, [data, searchTerm, sortConfig]);
+  }, [data, debouncedSearchTerm, sortConfig]);
 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -75,17 +112,38 @@ export function OptimizedTable<T extends Record<string, any>>({
 
   const totalPages = Math.ceil(filteredAndSortedData.length / pageSize);
 
-  const handleSort = (key: keyof T) => {
+  const handleSort = useCallback((key: keyof T) => {
     setSortConfig(current => ({
       key,
       direction: current?.key === key && current.direction === 'asc' ? 'desc' : 'asc'
     }));
-  };
+  }, []);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   if (loading) {
     return <TableSkeleton rows={pageSize} cols={columns.length} />;
   }
 
+  if (data.length === 0) {
+    return (
+      <div className={cn("bg-white rounded-lg shadow-sm border", className)}>
+        <div className="p-12 text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Search className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No data found</h3>
+          <p className="text-gray-500">There are no records to display at the moment.</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className={cn("bg-white rounded-lg shadow-sm border", className)}>
       {/* Header with search and filters */}
@@ -99,9 +157,17 @@ export function OptimizedTable<T extends Record<string, any>>({
                   type="text"
                   placeholder="Search..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={handleSearchChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             )}
             {filterable && (
@@ -111,6 +177,11 @@ export function OptimizedTable<T extends Record<string, any>>({
               </button>
             )}
           </div>
+          {debouncedSearchTerm && (
+            <div className="mt-2 text-sm text-gray-600">
+              Showing {filteredAndSortedData.length} results for "{debouncedSearchTerm}"
+            </div>
+          )}
         </div>
       )}
 
@@ -158,25 +229,12 @@ export function OptimizedTable<T extends Record<string, any>>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {paginatedData.map((item, index) => (
-              <tr 
-                key={index} 
-                className="hover:bg-gray-50 transition-colors duration-150"
-              >
-                {columns.map((column) => (
-                  <td
-                    key={String(column.key)}
-                    className={cn(
-                      "px-6 py-4 whitespace-nowrap text-sm text-gray-900",
-                      column.className
-                    )}
-                  >
-                    {column.render 
-                      ? column.render(item[column.key], item)
-                      : String(item[column.key] || '-')
-                    }
-                  </td>
-                ))}
-              </tr>
+              <TableRow
+                key={item.id || index}
+                item={item}
+                columns={columns}
+                index={index}
+              />
             ))}
           </tbody>
         </table>
@@ -191,18 +249,29 @@ export function OptimizedTable<T extends Record<string, any>>({
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors duration-150"
               >
                 Previous
               </button>
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const page = i + 1;
+              {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
+                let page;
+                if (totalPages <= 7) {
+                  page = i + 1;
+                } else {
+                  if (currentPage <= 4) {
+                    page = i + 1;
+                  } else if (currentPage >= totalPages - 3) {
+                    page = totalPages - 6 + i;
+                  } else {
+                    page = currentPage - 3 + i;
+                  }
+                }
                 return (
                   <button
                     key={page}
-                    onClick={() => setCurrentPage(page)}
+                    onClick={() => handlePageChange(page)}
                     className={cn(
                       "px-3 py-1 border rounded-md text-sm transition-colors duration-150",
                       currentPage === page
@@ -215,7 +284,7 @@ export function OptimizedTable<T extends Record<string, any>>({
                 );
               })}
               <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors duration-150"
               >
@@ -227,4 +296,6 @@ export function OptimizedTable<T extends Record<string, any>>({
       )}
     </div>
   );
-}
+}) as <T extends Record<string, any>>(props: OptimizedTableProps<T>) => JSX.Element;
+
+OptimizedTable.displayName = 'OptimizedTable';
