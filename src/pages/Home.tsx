@@ -1,4 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { 
+  FiPlus, 
+  FiEdit3, 
+  FiTrash2, 
+  FiCheck, 
+  FiClock,
+  FiTrendingUp,
+  FiUsers,
+  FiDollarSign,
+  FiBell,
+  FiZap
+} from "react-icons/fi";
 
 interface Task {
   id: number;
@@ -81,60 +93,49 @@ export default function Home() {
 
   return (
     <div>
-      <h1>Dashboard Overview</h1>
+      <h1>Enterprise Dashboard</h1>
       
       <div className="dashboard-panels">
         <div>
           <div className="cards">
             <div className="card">
-              <h2>New Leads</h2>
+              <h2><FiUsers className="inline mr-2" />New Leads</h2>
               <p>{Math.floor(Math.random() * 50) + 10}</p>
             </div>
             <div className="card">
-              <h2>Revenue</h2>
+              <h2><FiDollarSign className="inline mr-2" />Revenue</h2>
               <p>${(Math.floor(Math.random() * 20000) + 5000).toLocaleString()}</p>
             </div>
             <div className="card">
-              <h2>Tasks Pending</h2>
+              <h2><FiClock className="inline mr-2" />Tasks Pending</h2>
               <p>{tasks.filter(t => !t.done).length}</p>
             </div>
             <div className="card">
-              <h2>Conversion Rate</h2>
+              <h2><FiTrendingUp className="inline mr-2" />Conversion Rate</h2>
               <p>{(Math.random() * 20 + 15).toFixed(1)}%</p>
             </div>
           </div>
 
           <div className="notifications">
             <h2>
-              Task Management 
+              <FiCheck className="inline mr-2" />Task Management 
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                 <input 
                   type="text" 
                   value={newTaskText}
                   onChange={(e) => setNewTaskText(e.target.value)}
                   placeholder="New task..."
-                  style={{ 
-                    padding: '0.5rem', 
-                    borderRadius: '4px', 
-                    border: '1px solid #ccc',
-                    fontSize: '0.8rem'
-                  }}
+                  className="task-input"
                   onKeyPress={(e) => e.key === 'Enter' && addTask()}
                 />
-                <button onClick={addTask} style={{ padding: '0.5rem', fontSize: '0.8rem' }}>
-                  ➕ Add
+                <button onClick={addTask} className="add-task-btn">
+                  <FiPlus /> Add
                 </button>
               </div>
             </h2>
             <ul>
               {tasks.map(task => (
-                <li key={task.id} style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between',
-                  textDecoration: task.done ? 'line-through' : 'none',
-                  opacity: task.done ? 0.6 : 1
-                }}>
+                <li key={task.id} className={`task-item ${task.done ? 'completed' : ''}`}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <input 
                       type="checkbox" 
@@ -146,23 +147,15 @@ export default function Home() {
                   <div style={{ display: 'flex', gap: '0.25rem' }}>
                     <button 
                       onClick={() => editTask(task.id)}
-                      style={{ 
-                        padding: '0.25rem 0.5rem', 
-                        fontSize: '0.7rem',
-                        background: '#f59e0b'
-                      }}
+                      className="edit-btn"
                     >
-                      ✏️
+                      <FiEdit3 />
                     </button>
                     <button 
                       onClick={() => deleteTask(task.id)}
-                      style={{ 
-                        padding: '0.25rem 0.5rem', 
-                        fontSize: '0.7rem',
-                        background: '#ef4444'
-                      }}
+                      className="delete-btn"
                     >
-                      🗑️
+                      <FiTrash2 />
                     </button>
                   </div>
                 </li>
@@ -172,17 +165,17 @@ export default function Home() {
         </div>
 
         <div className="notifications">
-          <h2>🤖 AI Suggestions</h2>
+          <h2><FiZap className="inline mr-2" />AI Suggestions</h2>
           <ul>
             {aiSuggestions.map((s, i) => (
-              <li key={i}>💡 {s}</li>
+              <li key={i}><FiZap className="text-yellow-500 mr-2" /> {s}</li>
             ))}
           </ul>
 
-          <h2>🔔 Live Notifications</h2>
+          <h2><FiBell className="inline mr-2" />Live Notifications</h2>
           <ul>
             {notifications.map((n, i) => (
-              <li key={i}>🔔 {n}</li>
+              <li key={i}><FiBell className="text-blue-500 mr-2" /> {n}</li>
             ))}
           </ul>
         </div>

@@ -1,5 +1,16 @@
 import React, { useState } from "react";
 import { Routes, Route, NavLink } from "react-router-dom";
+import { 
+  FiHome, 
+  FiBarChart3, 
+  FiUsers, 
+  FiTarget, 
+  FiSettings,
+  FiSun,
+  FiMoon,
+  FiChevronLeft,
+  FiChevronRight
+} from "react-icons/fi";
 import Home from "./pages/Home";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
@@ -16,34 +27,37 @@ function App() {
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
-        <div className="logo">⚡ SaaS CRM</div>
+        <div className="logo">
+          <span>⚡</span>
+          {!sidebarCollapsed && <span>Enterprise CRM</span>}
+        </div>
         <button className="collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
-          {sidebarCollapsed ? "▶" : "◀"}
+          {sidebarCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
         </button>
         <nav className="sidebar-links">
           <NavLink to="/" end className={({ isActive }) => isActive ? "active" : ""}>
-            <span className="icon">🏠</span>
+            <FiHome className="icon" />
             {!sidebarCollapsed && <span>Home</span>}
           </NavLink>
           <NavLink to="/analytics" className={({ isActive }) => isActive ? "active" : ""}>
-            <span className="icon">📊</span>
+            <FiBarChart3 className="icon" />
             {!sidebarCollapsed && <span>Analytics</span>}
           </NavLink>
           <NavLink to="/users" className={({ isActive }) => isActive ? "active" : ""}>
-            <span className="icon">👥</span>
+            <FiUsers className="icon" />
             {!sidebarCollapsed && <span>Users</span>}
           </NavLink>
           <NavLink to="/leads" className={({ isActive }) => isActive ? "active" : ""}>
-            <span className="icon">🎯</span>
+            <FiTarget className="icon" />
             {!sidebarCollapsed && <span>Leads</span>}
           </NavLink>
           <NavLink to="/settings" className={({ isActive }) => isActive ? "active" : ""}>
-            <span className="icon">⚙️</span>
+            <FiSettings className="icon" />
             {!sidebarCollapsed && <span>Settings</span>}
           </NavLink>
         </nav>
         <button className="darkmode-btn" onClick={() => setDarkMode(!darkMode)}>
-          {darkMode ? "🌞" : "🌙"}
+          {darkMode ? <FiSun /> : <FiMoon />}
           {!sidebarCollapsed && <span>{darkMode ? " Light Mode" : " Dark Mode"}</span>}
         </button>
       </aside>

@@ -1,10 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Performance optimizations */
+/* Global Styles */
 * {
   box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
 html {
@@ -12,27 +14,204 @@ html {
 }
 
 body {
+  font-family: 'Inter', sans-serif;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  background-color: #f5f6fa;
+  color: #333;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* Optimize images and media */
-img, video {
-  max-width: 100%;
-  height: auto;
-  display: block;
+.dashboard.dark {
+  background-color: #1e1e2f;
+  color: #eee;
 }
 
-/* Smooth animations with performance considerations */
-@keyframes fadeIn {
+.dashboard.dark body {
+  background-color: #1e1e2f;
+}
+
+/* Button Styles */
+button {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+button, .add-task-btn {
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(78, 84, 200, 0.3);
+}
+
+button:hover, .add-task-btn:hover {
+  background: linear-gradient(135deg, #3b40a0, #7b80e8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(78, 84, 200, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Input Styles */
+input[type="text"], input[type="email"], input[type="number"], select, textarea {
+  border-radius: 8px;
+  border: 2px solid #e1e5e9;
+  padding: 10px 14px;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #4e54c8;
+  box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.1);
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.card h2 {
+  font-weight: 600;
+  color: #4e54c8;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Dashboard Layout */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.dashboard-panels {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+  transition: all 0.5s ease;
+}
+
+/* Notifications Panel */
+.notifications {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.notifications h2 {
+  font-weight: 700;
+  color: #2d3748;
+  font-size: 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notifications ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notifications li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.notifications li:last-child {
+  border-bottom: none;
+}
+
+.notifications li:hover {
+  background: #f8fafc;
+  margin: 0 -12px;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+/* Task Management */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.task-item:hover {
+  background: #e2e8f0;
+  transform: translateX(4px);
+}
+
+.task-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #4e54c8;
+}
+
+.task-item.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+/* Smooth Animations */
+.dashboard-panels, .cards, .notifications {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -51,62 +230,74 @@ img, video {
   }
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
+@keyframes pulse {
+  0%, 100% {
     opacity: 1;
-    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Dark Mode Overrides */
+.dashboard.dark .card {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+.dashboard.dark .notifications {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+.dashboard.dark .notifications h2 {
+  color: #e2e8f0;
+}
+
+.dashboard.dark .notifications li {
+  border-bottom-color: #4a5568;
+}
+
+.dashboard.dark .task-item {
+  background: #4a5568;
+}
+
+.dashboard.dark .task-item:hover {
+  background: #718096;
+}
+
+.dashboard.dark input, .dashboard.dark select, .dashboard.dark textarea {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-panels {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
-  100% {
-    background-position: 200% 0;
+  
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
+  .notifications {
+    padding: 20px;
   }
 }
 
-/* Animation classes */
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-.animate-slideIn {
-  animation: slideIn 0.4s ease-out forwards;
-}
-
-.animate-scaleIn {
-  animation: scaleIn 0.3s ease-out forwards;
-}
-
-/* Loading shimmer effect */
-.loading-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Smooth transitions for interactive elements */
-button, a, input, select, textarea {
-  transition: all 0.2s ease-in-out;
-}
-
-/* Focus styles for accessibility */
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Optimize scrollbars */
+/* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -118,53 +309,18 @@ textarea:focus-visible {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: linear-gradient(135deg, #3b40a0, #7b80e8);
 }
 
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.dashboard.dark ::-webkit-scrollbar-track {
+  background: #4a5568;
 }
 
-/* Performance optimizations for large lists */
-.virtual-list {
-  contain: layout style paint;
-}
-
-/* Optimize table rendering */
-table {
-  table-layout: fixed;
-}
-
-/* Prevent layout shifts */
-.aspect-ratio-box {
-  position: relative;
-  width: 100%;
-  height: 0;
-}
-
-.aspect-ratio-box::before {
-  content: '';
-  display: block;
-  padding-top: 56.25%; /* 16:9 aspect ratio */
-}
-
-.aspect-ratio-box > * {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.dashboard.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
 }

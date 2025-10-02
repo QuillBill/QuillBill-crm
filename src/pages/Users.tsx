@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FiPlus, FiEdit3, FiTrash2, FiUser, FiMail, FiShield, FiPlay, FiPause } from "react-icons/fi";
 
 interface User {
   id: number;
@@ -80,37 +81,37 @@ export default function Users() {
   return (
     <div>
       <h1>
-        User Management 
+        <FiUsers className="inline mr-3" />User Management 
         <button 
           onClick={() => setShowAddForm(!showAddForm)}
-          style={{ marginLeft: '1rem', fontSize: '1rem' }}
+          className="add-user-btn ml-4"
         >
-          {showAddForm ? "❌ Cancel" : "➕ Add User"}
+          {showAddForm ? "Cancel" : <><FiPlus className="mr-2" />Add User</>}
         </button>
       </h1>
 
       {showAddForm && (
         <div className="user-list" style={{ marginBottom: '2rem' }}>
-          <h2>{editingUser ? "Edit User" : "Add New User"}</h2>
+          <h2>
+            <FiUser className="inline mr-2" />
+            {editingUser ? "Edit User" : "Add New User"}
+          </h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
             <input
               type="text"
               placeholder="Full Name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ccc' }}
             />
             <input
               type="email"
               placeholder="Email Address"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ccc' }}
             />
             <select
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-              style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ccc' }}
             >
               <option value="">Select Role</option>
               <option value="Admin">Admin</option>
@@ -121,41 +122,51 @@ export default function Users() {
             <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ccc' }}
             >
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
           </div>
           <button onClick={editingUser ? updateUser : addUser}>
-            {editingUser ? "💾 Update User" : "➕ Add User"}
+            {editingUser ? "Update User" : <><FiPlus className="mr-2" />Add User</>}
           </button>
         </div>
       )}
 
       <div className="user-list">
-        <h2>Team Members ({users.length})</h2>
+        <h2>
+          <FiUser className="inline mr-2" />
+          Team Members ({users.length})
+        </h2>
         {users.map(user => (
           <div key={user.id} className="user-item">
             <div>
-              <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{user.name}</div>
-              <div style={{ color: '#64748b', fontSize: '0.9rem' }}>{user.email}</div>
+              <div style={{ fontWeight: 'bold', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <FiUser className="text-gray-500" />
+                {user.name}
+              </div>
+              <div style={{ color: '#64748b', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <FiMail className="text-gray-400" />
+                {user.email}
+              </div>
               <div style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>
                 <span style={{ 
-                  background: user.role === 'Admin' ? '#ef4444' : user.role === 'Manager' ? '#f59e0b' : '#10b981',
+                  background: user.role === 'Admin' ? 'linear-gradient(135deg, #ef4444, #fc8181)' : user.role === 'Manager' ? 'linear-gradient(135deg, #f59e0b, #fbb040)' : 'linear-gradient(135deg, #10b981, #48bb78)',
                   color: 'white',
                   padding: '0.25rem 0.5rem',
-                  borderRadius: '4px',
+                  borderRadius: '12px',
                   marginRight: '0.5rem'
                 }}>
+                  <FiShield className="inline mr-1" />
                   {user.role}
                 </span>
                 <span style={{ 
-                  background: user.status === 'Active' ? '#10b981' : '#6b7280',
+                  background: user.status === 'Active' ? 'linear-gradient(135deg, #10b981, #48bb78)' : 'linear-gradient(135deg, #6b7280, #9ca3af)',
                   color: 'white',
                   padding: '0.25rem 0.5rem',
-                  borderRadius: '4px'
+                  borderRadius: '12px'
                 }}>
+                  <span className={`status-indicator ${user.status === 'Active' ? 'status-active' : 'status-inactive'}`}></span>
                   {user.status}
                 </span>
               </div>
@@ -163,29 +174,28 @@ export default function Users() {
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={() => editUser(user)}
-                style={{ 
-                  background: '#f59e0b',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.8rem'
-                }}
+                className="edit-btn"
               >
-                ✏️ Edit
+                <FiEdit3 className="mr-1" /> Edit
               </button>
               <button 
                 onClick={() => toggleUserStatus(user.id)}
                 style={{ 
-                  background: user.status === 'Active' ? '#6b7280' : '#10b981',
+                  background: user.status === 'Active' ? 'linear-gradient(135deg, #6b7280, #9ca3af)' : 'linear-gradient(135deg, #10b981, #48bb78)',
                   padding: '0.5rem 1rem',
-                  fontSize: '0.8rem'
+                  fontSize: '0.8rem',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px'
                 }}
               >
-                {user.status === 'Active' ? '⏸️ Deactivate' : '▶️ Activate'}
+                {user.status === 'Active' ? <><FiPause className="mr-1" /> Deactivate</> : <><FiPlay className="mr-1" /> Activate</>}
               </button>
               <button 
                 onClick={() => deleteUser(user.id)}
                 className="delete-btn"
               >
-                🗑️ Delete
+                <FiTrash2 className="mr-1" /> Delete
               </button>
             </div>
           </div>
