@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Layout from './components/layout/Layout';
 import { useAuth } from './hooks/useAuth';
@@ -59,66 +59,64 @@ function App() {
           </div>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
-        <Toaster 
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-              borderRadius: '8px',
-              fontSize: '14px',
-            },
-            success: {
-              style: { background: '#10b981' },
-            },
-            error: {
-              style: { background: '#ef4444' },
-            },
-          }}
-        />
-        
-        {user ? (
-          <Layout>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/customers" element={<Customers />} />
-                <Route path="/invoices" element={<Invoices />} />
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </Suspense>
-          </Layout>
-        ) : (
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-4 animate-scaleIn">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold text-xl">QB</span>
-                </div>
-                <h1 className="text-2xl font-bold text-gray-900">Welcome to QuillBill</h1>
-                <p className="text-gray-600 mt-2">Your complete SaaS billing platform</p>
+    <div className="min-h-screen bg-gray-50">
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+            borderRadius: '8px',
+            fontSize: '14px',
+          },
+          success: {
+            style: { background: '#10b981' },
+          },
+          error: {
+            style: { background: '#ef4444' },
+          },
+        }}
+      />
+      
+      {user ? (
+        <Layout>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </Suspense>
+        </Layout>
+      ) : (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-4 animate-scaleIn">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-white font-bold text-xl">QB</span>
               </div>
-              <div className="space-y-4">
-                <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                  Get Started
-                </button>
-                <p className="text-center text-sm text-gray-500">
-                  Demo mode - All features available
-                </p>
-              </div>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome to QuillBill</h1>
+              <p className="text-gray-600 mt-2">Your complete SaaS billing platform</p>
+            </div>
+            <div className="space-y-4">
+              <button 
+                onClick={handleDemoLogin}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Start Demo
+              </button>
+              <p className="text-center text-sm text-gray-500">
+                Demo mode - All features available
+              </p>
             </div>
           </div>
-        )}
-      </div>
-    </Router>
+        </div>
+      )}
+    </div>
   );
 }
 
