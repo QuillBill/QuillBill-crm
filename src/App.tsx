@@ -10,6 +10,7 @@ import LoadingSpinner from './components/ui/LoadingSpinner';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Customers = lazy(() => import('./pages/Customers'));
 const Invoices = lazy(() => import('./pages/Invoices'));
+const Analytics = lazy(() => import('./pages/Analytics'));
 
 // Optimized loading component
 const PageLoader = () => (
@@ -25,6 +26,10 @@ function App() {
   const { user, loading } = useAuth();
   const [isInitialized, setIsInitialized] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('connecting');
+
+  const handleDemoLogin = () => {
+    // Demo login logic
+  };
 
   useEffect(() => {
     // Initialize the app
@@ -59,6 +64,10 @@ function App() {
           </div>
         </div>
       </div>
+    );
+  }
+
+  return (
     <div className="min-h-screen bg-gray-50">
       <Toaster 
         position="top-right"
