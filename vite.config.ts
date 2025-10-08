@@ -4,11 +4,12 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: './',
   build: {
     // Optimize build performance
     target: 'esnext',
     minify: 'esbuild',
-    sourcemap: false,
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -21,7 +22,10 @@ export default defineConfig({
       }
     },
     // Increase chunk size warning limit
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    // Optimize for production
+    cssCodeSplit: true,
+    assetsInlineLimit: 4096
   },
   server: {
     // Optimize dev server

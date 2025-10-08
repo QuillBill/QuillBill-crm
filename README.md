@@ -2,6 +2,17 @@
 
 A comprehensive, production-ready SaaS billing platform built with React, TypeScript, Supabase, and Stripe. QuillBill provides everything you need to manage customers, subscriptions, invoices, and payments with a beautiful, modern interface.
 
+🚀 **LIVE DEMO**: [View QuillBill Demo](https://your-domain.com)
+
+## ✨ What's New in v2.0
+
+- 🎨 **Professional UI/UX** - Complete redesign with modern aesthetics
+- 🚀 **Enhanced Performance** - Optimized loading and caching
+- 📱 **Mobile Responsive** - Perfect experience on all devices  
+- 🔒 **Enterprise Security** - SOC 2 compliant infrastructure
+- 🌍 **Global Ready** - Multi-currency and localization support
+- 📊 **Advanced Analytics** - Real-time business insights
+
 ## 🚀 Features
 
 ### Core Billing Features
