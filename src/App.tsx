@@ -42,13 +42,5 @@ function App() {
     </ErrorBoundary>
   );
 }
-            </Routes>
-          </Suspense>
-          <Toast />
-        </div>
-      </Router>
-    </ErrorBoundary>
-  );
-}
 
 export default App;
